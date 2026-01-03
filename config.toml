@@ -31,7 +31,7 @@ theme = "papermod"
   [[menu.main]]
     identifier = "blog"
     name = "Blog"
-    url = "/content/"
+    url = "/blog/"
     weight = 10
   [[menu.main]]
     identifier = "about"
