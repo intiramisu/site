@@ -1,11 +1,11 @@
-baseURL = "https://intiramisu.github.io/site/"
+baseURL = "https://intiramisu.github.io/blog/"
 languageCode = "ja"
 defaultContentLanguage = "ja"
 title = "備忘録"
 theme = "papermod"
 
 [params]
-  description = "ブログと写真のポートフォリオサイト"
+  description = "ブログだよ"
   author = "intiramisu"
   defaultTheme = "dark"  # ダークモード固定
   disableThemeToggle = true  # テーマ切り替えボタン非表示
@@ -31,7 +31,7 @@ theme = "papermod"
   [[menu.main]]
     identifier = "blog"
     name = "Blog"
-    url = "/blog/"
+    url = "/content/"
     weight = 10
   [[menu.main]]
     identifier = "about"
