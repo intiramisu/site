@@ -12,9 +12,29 @@
 
 <!-- ファーストビュー -->
 <div class="hero">
-  <div class="clock-moon-container">
-    <div class="current-time" id="current-time"></div>
-    <canvas id="moon-canvas" width="120" height="120"></canvas>
+  <div class="observatory">
+    <div class="obs-time-block">
+      <div class="obs-date" id="obs-date"></div>
+      <div class="obs-time" id="current-time"></div>
+    </div>
+    <div class="obs-divider"></div>
+    <div class="obs-moon-block">
+      <canvas id="moon-canvas" width="140" height="140"></canvas>
+      <div class="obs-moon-info">
+        <div class="obs-moon-phase" id="moon-phase"></div>
+        <div class="obs-moon-age" id="moon-age"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-intro">
+    <p class="hero-tagline">技術ネタから趣味まで、雑多に書き残す備忘録</p>
+    <p class="hero-stack">Go / Middleware / Camera</p>
+  </div>
+  <div class="scroll-hint">
+    <span class="scroll-hint-text">Scroll</span>
+    <svg class="scroll-hint-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 4v16M6 14l6 6 6-6"/>
+    </svg>
   </div>
 </div>
 

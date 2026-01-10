@@ -1,21 +1,210 @@
 {{- /* Footer custom content area start */ -}}
 <style>
+/* Twitter embed */
 .twitter-tweet-rendered {
   background: transparent !important;
   overflow: hidden !important;
   border-radius: 16px !important;
 }
+
 .twitter-tweet iframe {
   border: none !important;
   clip-path: inset(1px 1px 1px 2px round 16px) !important;
 }
-.paginav .title {
-  font-size: 0.9rem;
-}
+
+/* Pagination */
+.paginav .title,
 .paginav a > span:not(.title) {
   font-size: 0.9rem;
 }
+
+/* ===== AI Influence Level Meter ===== */
+.ail-meter {
+  --ail-human: #e8b87a;
+  --ail-mid: #a78bfa;
+  --ail-ai: #38bdf8;
+  margin-bottom: 2rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(30, 30, 35, 0.9) 0%, rgba(20, 20, 25, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  position: relative;
+  overflow: hidden;
+  animation: ail-fadeIn 0.6s ease-out;
+}
+
+.ail-meter::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0.1) 80%, transparent);
+}
+
+@keyframes ail-fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.ail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ail-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.ail-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.ail-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Gauge */
+.ail-gauge {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.ail-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ail-fill {
+  height: 100%;
+  width: calc((var(--ail-level) / 5) * 100%);
+  background: linear-gradient(90deg, var(--ail-human) 0%, var(--ail-mid) 50%, var(--ail-ai) 100%);
+  border-radius: 3px;
+  position: relative;
+  animation: ail-fillIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes ail-fillIn {
+  from { width: 0; }
+  to { width: calc((var(--ail-level) / 5) * 100%); }
+}
+
+.ail-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+/* Markers */
+.ail-markers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding: 0 2px;
+}
+
+.ail-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.ail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.ail-marker.ail-active .ail-dot {
+  background: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  animation: ail-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ail-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); }
+  50% { box-shadow: 0 0 16px rgba(255, 255, 255, 0.8); }
+}
+
+.ail-num {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.ail-marker.ail-active .ail-num {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Labels */
+.ail-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+
+.ail-label-human,
+.ail-label-ai {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.ail-label-human { color: var(--ail-human); }
+.ail-label-ai { color: var(--ail-ai); }
+
+/* Tooltip */
+.ail-tooltip {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-body, system-ui, sans-serif);
+  line-height: 1.4;
+}
 </style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.twitter-tweet').forEach(function(tweet) {

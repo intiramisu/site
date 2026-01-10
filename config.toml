@@ -35,11 +35,6 @@ theme = "papermod"
     name = "Posts"
     url = "/posts/"
     weight = 10
-  [[menu.main]]
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-    weight = 30
 
 [markup]
   [markup.highlight]

@@ -1,4 +1,7 @@
-/* 背景エフェクト - 全画面固定、クリック無効 */
+/* ===== Fonts ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap');
+
+/* ===== 背景エフェクト ===== */
 .bg-effects {
   position: fixed;
   inset: 0;
@@ -7,7 +10,6 @@
   pointer-events: none;
 }
 
-/* パーティクルCanvas */
 #particles-canvas {
   position: absolute;
   inset: 0;
@@ -59,43 +61,194 @@
   transition: opacity 0.1s ease;
 }
 
-/* ヒーローセクション（ファーストビュー） */
+/* ===== ヒーローセクション ===== */
 .hero {
   position: relative;
   min-height: calc(100vh - 80px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 1;
 }
 
-/* 時計と月齢表示 */
-.clock-moon-container {
+/* ===== Observatory ===== */
+.observatory {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 3rem;
+  padding: 2.5rem 3rem;
+  background: linear-gradient(135deg, rgba(15, 15, 20, 0.7) 0%, rgba(25, 25, 35, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  animation: obs-fadeIn 1.2s ease-out;
 }
 
-.current-time {
-  font-size: 4rem;
-  font-weight: 200;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-  font-variant-numeric: tabular-nums;
-}
-
-#moon-canvas {
-  opacity: 0.9;
-}
-
-@media (max-width: 768px) {
-  .current-time {
-    font-size: 2.5rem;
+@keyframes obs-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
+.obs-time-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  animation: obs-slideIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes obs-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.obs-date {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.obs-time {
+  font-family: 'DM Mono', 'SF Mono', monospace;
+  font-size: 4.5rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 60px rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+}
+
+.obs-divider {
+  width: 1px;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.2) 80%, transparent);
+  animation: obs-dividerIn 0.6s ease-out 0.5s both;
+}
+
+@keyframes obs-dividerIn {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.obs-moon-block {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  animation: obs-slideIn 0.8s ease-out 0.4s both;
+}
+
+#moon-canvas {
+  opacity: 0.95;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 230, 0.1));
+}
+
+.obs-moon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.obs-moon-phase {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.obs-moon-age {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* ===== Hero Intro ===== */
+.hero-intro {
+  margin-top: 2.5rem;
+  text-align: center;
+  animation: obs-fadeIn 1s ease-out 0.6s both;
+}
+
+.hero-tagline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+}
+
+.hero-stack {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ===== Scroll Hint ===== */
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: obs-fadeIn 1s ease-out 1s both;
+}
+
+.scroll-hint-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.scroll-hint-arrow {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.3);
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
 
 /* ===== SNSセクション ===== */
 .sns-section {
@@ -238,10 +391,56 @@
 
 /* ===== レスポンシブ ===== */
 @media (max-width: 768px) {
+  /* 背景シェイプ */
   .shape-1 { width: 400px; height: 400px; }
   .shape-2 { width: 350px; height: 350px; }
   .shape-3 { width: 300px; height: 300px; }
 
+  /* Observatory */
+  .observatory {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .obs-time-block {
+    align-items: center;
+  }
+
+  .obs-time {
+    font-size: 3rem;
+  }
+
+  .obs-divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.2) 80%, transparent);
+  }
+
+  .obs-moon-block {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .obs-moon-info {
+    align-items: center;
+  }
+
+  /* Hero */
+  .hero-intro {
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+
+  .hero-tagline {
+    font-size: 1rem;
+  }
+
+  .scroll-hint {
+    bottom: 1.5rem;
+  }
+
+  /* SNS */
   .sns-container {
     gap: 1.5rem;
   }
@@ -255,6 +454,7 @@
     height: 36px;
   }
 
+  /* Posts */
   .posts-section {
     padding: 3rem 1rem 4rem;
   }

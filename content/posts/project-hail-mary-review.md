@@ -4,6 +4,7 @@ date: 2025-08-11T17:13:46+09:00
 draft: false
 description: "プロジェクト・ヘイル・メアリーの読書感想"
 tags: ["読書感想"]
+ail: 1
 ---
 
 - [プロジェクト・ヘイル・メアリー 上](https://www.hayakawa-online.co.jp/shop/g/g0005210070/)

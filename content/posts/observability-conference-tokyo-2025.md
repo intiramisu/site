@@ -4,6 +4,7 @@ date: 2025-10-27T23:00:41+09:00
 draft: false
 description: "Observability Conference Tokyo 2025の参加レポート"
 tags: ["参加レポート"]
+ail: 1
 ---
 
 ## 概要
