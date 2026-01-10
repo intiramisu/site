@@ -53,8 +53,9 @@
   function loadSearchIndex() {
     if (searchData) return Promise.resolve();
 
-    const baseUrl = document.querySelector('link[rel="canonical"]')?.href || window.location.origin;
-    const indexUrl = new URL('index.json', baseUrl).href;
+    // Get base URL from modal data attribute (set by Hugo)
+    const baseUrl = modal.dataset.baseUrl || window.location.origin + '/blog/';
+    const indexUrl = baseUrl.replace(/\/$/, '') + '/index.json';
 
     return loadFuseJs()
       .then(() => fetch(indexUrl))
