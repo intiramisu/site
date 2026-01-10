@@ -23,25 +23,35 @@ const MOON_PHASES = [
   { threshold: 1, name: '新月' }
 ];
 
-const CRATERS = [
-  // 大きな海（暗い部分）
-  { x: -0.3, y: -0.25, r: 0.35, depth: 0.15, type: 'mare' },
-  { x: 0.25, y: -0.1, r: 0.25, depth: 0.12, type: 'mare' },
-  { x: 0.1, y: 0.25, r: 0.2, depth: 0.1, type: 'mare' },
-  { x: -0.15, y: 0.1, r: 0.18, depth: 0.1, type: 'mare' },
-  { x: 0.4, y: -0.3, r: 0.15, depth: 0.08, type: 'mare' },
-  // クレーター
-  { x: -0.55, y: 0.65, r: 0.12, depth: 0.2, type: 'crater' },
-  { x: 0.35, y: 0.55, r: 0.08, depth: 0.18, type: 'crater' },
-  { x: -0.2, y: -0.55, r: 0.07, depth: 0.15, type: 'crater' },
-  { x: 0.5, y: 0.1, r: 0.06, depth: 0.12, type: 'crater' },
-  { x: -0.4, y: 0.35, r: 0.05, depth: 0.1, type: 'crater' },
-  { x: 0.15, y: -0.45, r: 0.05, depth: 0.1, type: 'crater' },
-  { x: -0.6, y: -0.1, r: 0.04, depth: 0.08, type: 'crater' },
-  { x: 0.55, y: -0.5, r: 0.04, depth: 0.08, type: 'crater' },
-  { x: -0.35, y: -0.4, r: 0.03, depth: 0.06, type: 'crater' },
-  { x: 0.3, y: 0.35, r: 0.03, depth: 0.06, type: 'crater' }
-];
+// 月テクスチャ（リアルな月面画像を使用）
+let moonTexture = null;
+let moonTextureData = null;
+
+function loadMoonTexture() {
+  return new Promise((resolve) => {
+    const img = new Image();
+    // crossOrigin を外す（ローカル開発時の問題回避）
+    img.onload = () => {
+      console.log('Moon texture loaded:', img.width, 'x', img.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      moonTextureData = ctx.getImageData(0, 0, img.width, img.height);
+      moonTexture = img;
+      console.log('Moon texture data ready, sample pixel:',
+        moonTextureData.data[0], moonTextureData.data[1], moonTextureData.data[2]);
+      resolve();
+    };
+    img.onerror = (e) => {
+      console.error('Failed to load moon texture:', e);
+      resolve();
+    };
+    // baseURL を考慮したパス（/blog/ サブディレクトリ対応）
+    img.src = '/blog/images/moon-texture.jpg';
+  });
+}
 
 const PARTICLE_CONFIG = {
   count: 40,
@@ -52,7 +62,7 @@ const PARTICLE_CONFIG = {
 };
 
 // ===== 時計と月齢表示 =====
-function initClockAndMoon() {
+async function initClockAndMoon() {
   const timeEl = document.getElementById('current-time');
   const dateEl = document.getElementById('obs-date');
   const moonCanvas = document.getElementById('moon-canvas');
@@ -61,10 +71,24 @@ function initClockAndMoon() {
 
   if (!timeEl || !moonCanvas) return;
 
+  // テクスチャを読み込む
+  await loadMoonTexture();
+
   const moonCtx = moonCanvas.getContext('2d');
-  const size = 140;
+
+  // 高DPIディスプレイ対応（さらに3倍のスーパーサンプリング）
+  const dpr = (window.devicePixelRatio || 1) * 3;
+  const displaySize = 200; // CSS上のサイズ
+  const size = displaySize * dpr; // 実際の描画サイズ
+
+  // Canvas の実サイズを大きくし、CSSで縮小表示
+  moonCanvas.width = size;
+  moonCanvas.height = size;
+  moonCanvas.style.width = displaySize + 'px';
+  moonCanvas.style.height = displaySize + 'px';
+
   const center = size / 2;
-  const radius = 55;
+  const radius = (displaySize / 2 - 15) * dpr; // 余白を考慮
 
   function updateClock() {
     const now = new Date();
@@ -107,40 +131,59 @@ function getMoonPhaseName(age) {
   return '新月';
 }
 
-function getCraterEffect(nx, ny) {
-  let darkening = 0;
-  for (const c of CRATERS) {
-    const dx = nx - c.x;
-    const dy = ny - c.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < c.r) {
-      const normalizedDist = dist / c.r;
-      if (c.type === 'mare') {
-        darkening += c.depth * (1 - normalizedDist * 0.3);
-      } else {
-        darkening += c.depth * (1 - Math.sin(normalizedDist * Math.PI));
-      }
-    }
-  }
-  return Math.min(darkening, 0.4);
+// テクスチャからピクセルを取得（球面マッピング）
+function getTexturePixel(nx, ny) {
+  if (!moonTextureData) return { r: 180, g: 178, b: 165 }; // フォールバック
+
+  const texWidth = moonTextureData.width;
+  const texHeight = moonTextureData.height;
+
+  // 月は常に同じ面を地球に向けているので、シンプルな正射影マッピング
+  // nx, ny は -1 〜 1 の範囲なので、0 〜 1 に変換
+  const u = (nx + 1) / 2;
+  const v = (ny + 1) / 2;
+
+  const texX = Math.floor(u * texWidth * 0.5 + texWidth * 0.25) % texWidth;
+  const texY = Math.floor(v * texHeight) % texHeight;
+  const texIdx = (texY * texWidth + texX) * 4;
+
+  return {
+    r: moonTextureData.data[texIdx],
+    g: moonTextureData.data[texIdx + 1],
+    b: moonTextureData.data[texIdx + 2]
+  };
 }
 
 function drawMoon(ctx, size, center, radius, age) {
   ctx.clearRect(0, 0, size, size);
   const phase = (age / SYNODIC_MONTH) % 1;
 
-  // グロー効果
-  const glowGrad = ctx.createRadialGradient(center, center, radius * 0.9, center, center, radius + 8);
-  glowGrad.addColorStop(0, 'rgba(255, 255, 230, 0.05)');
-  glowGrad.addColorStop(1, 'rgba(255, 255, 230, 0)');
-  ctx.beginPath();
-  ctx.arc(center, center, radius + 8, 0, Math.PI * 2);
-  ctx.fillStyle = glowGrad;
-  ctx.fill();
+  // 多層グロー効果（よりリアルな光芒）
+  const glowLayers = [
+    { radiusMultiplier: 1.25, opacity: 0.03 },
+    { radiusMultiplier: 1.15, opacity: 0.05 },
+    { radiusMultiplier: 1.08, opacity: 0.08 }
+  ];
+
+  glowLayers.forEach(layer => {
+    const glowGrad = ctx.createRadialGradient(
+      center, center, radius * 0.95,
+      center, center, radius * layer.radiusMultiplier
+    );
+    glowGrad.addColorStop(0, `rgba(255, 252, 240, ${layer.opacity})`);
+    glowGrad.addColorStop(0.5, `rgba(255, 250, 230, ${layer.opacity * 0.5})`);
+    glowGrad.addColorStop(1, 'rgba(255, 248, 220, 0)');
+    ctx.beginPath();
+    ctx.arc(center, center, radius * layer.radiusMultiplier, 0, Math.PI * 2);
+    ctx.fillStyle = glowGrad;
+    ctx.fill();
+  });
 
   // ピクセル単位で月面を描画
   const imageData = ctx.createImageData(size, size);
   const data = imageData.data;
+
+  // 光源の方向（月齢に基づく）
   const lightAngle = phase * 2 * Math.PI;
   const lightX = Math.sin(lightAngle);
   const lightZ = -Math.cos(lightAngle);
@@ -153,23 +196,43 @@ function drawMoon(ctx, size, center, radius, age) {
 
       if (dist <= radius) {
         const idx = (y * size + x) * 4;
+
+        // 正規化された球面座標
         const nx = dx / radius;
         const ny = dy / radius;
         const nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny));
 
+        // テクスチャからピクセル取得
+        const texColor = getTexturePixel(nx, ny);
+
+        // 光の計算
         const dotProduct = nx * lightX + nz * lightZ;
-        const lightFactor = Math.max(0, Math.min(1, (dotProduct + 0.1) / 0.2));
-        const craterDark = getCraterEffect(nx, ny);
-        const edgeDarkening = 1 - (dist / radius) * 0.15;
-        const surfaceBrightness = (1 - craterDark) * edgeDarkening;
 
-        const lightR = 210 * surfaceBrightness;
-        const lightG = 208 * surfaceBrightness;
-        const lightB = 195 * surfaceBrightness;
+        // よりリアルな陰影（ソフトターミネーター）
+        const terminator = 0.12;
+        let lightFactor = (dotProduct + terminator) / (2 * terminator);
+        lightFactor = Math.max(0, Math.min(1, lightFactor));
+        // 滑らかな遷移
+        lightFactor = lightFactor * lightFactor * (3 - 2 * lightFactor);
 
-        data[idx] = Math.floor(18 + (lightR - 18) * lightFactor);
-        data[idx + 1] = Math.floor(20 + (lightG - 20) * lightFactor);
-        data[idx + 2] = Math.floor(32 + (lightB - 32) * lightFactor);
+        // 陰影部分の環境光（地球照など）
+        const ambientLight = 0.08;
+
+        // リムダークニング（縁が暗くなる効果）- 控えめに
+        const limbDarkening = 0.85 + 0.15 * nz;
+
+        // 最終的な明るさ
+        const brightness = (ambientLight + (1 - ambientLight) * lightFactor) * limbDarkening;
+
+        // 暗部は少し青みがかる（地球照効果）
+        const shadowTint = 1 - lightFactor;
+        const earthshineR = texColor.r * brightness * (1 - shadowTint * 0.05);
+        const earthshineG = texColor.g * brightness;
+        const earthshineB = texColor.b * brightness * (1 + shadowTint * 0.1);
+
+        data[idx] = Math.floor(Math.min(255, earthshineR));
+        data[idx + 1] = Math.floor(Math.min(255, earthshineG));
+        data[idx + 2] = Math.floor(Math.min(255, earthshineB));
         data[idx + 3] = 255;
       }
     }
