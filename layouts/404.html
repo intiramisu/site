@@ -1,0 +1,22 @@
+{{ define "main" }}
+<!-- 背景エフェクト（トップページと共通） -->
+<div class="bg-effects">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <canvas id="particles-canvas"></canvas>
+</div>
+
+<!-- 404コンテンツ -->
+<div class="error-page">
+  <h1 class="error-code">404</h1>
+  <p class="error-message">ページが見つかりませんでした</p>
+  <div class="error-actions">
+    <a href="{{ site.BaseURL }}" class="error-btn primary">トップへ戻る</a>
+    <a href="{{ "posts/" | absURL }}" class="error-btn secondary">記事一覧へ</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@4/dist/anime.iife.min.js" integrity="sha256-C0E9qZQjkxieXBG8cMpDEP99Xok/7IKhOaRNtfE1M1g=" crossorigin="anonymous"></script>
+<script src="{{ "js/hero-animation.js" | relURL }}"></script>
+{{ end }}

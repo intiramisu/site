@@ -95,6 +95,40 @@
   {{- if (.Param "comments") }}
   {{- partial "comments.html" . }}
   {{- end }}
+
+  {{- /* Related Posts */ -}}
+  {{- $related := slice }}
+  {{- $currentPermalink := .Permalink }}
+  {{- $currentTags := .Params.tags }}
+  {{- if $currentTags }}
+    {{- range $page := site.RegularPages }}
+      {{- if ne $page.Permalink $currentPermalink }}
+        {{- $pageTags := $page.Params.tags }}
+        {{- if $pageTags }}
+          {{- range $pageTags }}
+            {{- if in $currentTags . }}
+              {{- $related = $related | append $page }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- $related = $related | uniq | first 3 }}
+  {{- end }}
+
+  {{- if gt (len $related) 0 }}
+  <section class="related-posts">
+    <h2 class="related-posts-title">Related Posts</h2>
+    <div class="related-posts-container">
+      {{- range $related }}
+      <a href="{{ .Permalink }}" class="related-post-card">
+        <h3 class="related-post-title">{{ .Title }}</h3>
+        <time class="related-post-date">{{ .Date.Format "2006.01.02" }}</time>
+      </a>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
 </article>
 
 {{- end }}{{/* end main */}}
